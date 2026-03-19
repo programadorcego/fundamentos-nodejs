@@ -15,6 +15,14 @@ import http from "node:http";
 stateless: os dados são gravados em dispositivos externos.
 */
 
+/**
+ * 100-199: Informativos
+ * 200-299: Sucesso
+ * 300-399: Redirect
+ * 400-499: Client error responses
+ * 500-599: Server error responses
+*/
+
 const users = [];
 
 const server = http.createServer((req, res) => {
@@ -26,8 +34,10 @@ const server = http.createServer((req, res) => {
 
     if (req.url === "/users" && req.method === "POST") {
         users.push({name: "Willian", email: "programadorcego@gmail.com"})
-        return res.end();
+        return res.writeHead(201).end();
     }
+
+    return res.writeHead(404).end();
 });
 
 server.listen(3333, "localhost", () => {
