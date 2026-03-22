@@ -10,13 +10,23 @@ import http from "node:http";
  DELETE: Remover completamente
 */
 
+/*
+ * stateful: Os dados sempre são gravados em memória.
+stateless: os dados são gravados em dispositivos externos.
+*/
+
+const users = [];
+
 const server = http.createServer((req, res) => {
+    res.setHeader("Content-Type", "application/json");
+
     if (req.url === "/users" && req.method === "GET") {
-        return res.end("Listar usuários");
+        return res.end(JSON.stringify(users));
     }
 
     if (req.url === "/users" && req.method === "POST") {
-        return res.end("Criar usuário");
+        users.push({name: "Willian", email: "programadorcego@gmail.com"})
+        return res.end();
     }
 });
 
