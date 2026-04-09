@@ -1,4 +1,4 @@
-import { Readable, Writable } from "node:stream";
+import { Readable, Transform, Writable } from "node:stream";
 
 class OneToOneHundred extends Readable {
     index = 0;
@@ -24,5 +24,16 @@ class MultiplyByTenStream extends Writable {
     }
 }
 
+/*
+ * Transform é uma stream usada para modificar dados enquanto eles estão sendo lidos e escritos
+*/
+class InverseNumberStream extends Transform {
+    _transform(chunk, encoding, callback) {
+        const transformed = Number(chunk.toString()) * -1;
+        callback(null, Buffer.from(String(transformed)));
+    }
+}
+
 new OneToOneHundred()
+    .pipe(new InverseNumberStream())
     .pipe(new MultiplyByTenStream());
