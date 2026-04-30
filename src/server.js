@@ -25,7 +25,19 @@ stateless: os dados são gravados em dispositivos externos.
 
 const users = [];
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+    const buffers = [];
+
+    for await (const chunk of req) {
+        buffers.push(chunk);
+    }
+
+    try {
+        req.body = JSON.parse(Buffer.concat(buffers).toString());
+    } catch {
+        req.body = null;
+    }
+
     res.setHeader("Content-Type", "application/json");
 
     if (req.url === "/users" && req.method === "GET") {
@@ -33,7 +45,13 @@ const server = http.createServer((req, res) => {
     }
 
     if (req.url === "/users" && req.method === "POST") {
-        users.push({name: "Willian", email: "programadorcego@gmail.com"})
+        const { name, email } = req.body;
+        
+        users.push({
+            id: 1,
+            name,
+            email,
+        })
         return res.writeHead(201).end();
     }
 
