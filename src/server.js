@@ -1,4 +1,5 @@
 import http from "node:http";
+import { json } from "./middlewares/json.js";
 
 /*
  Métodos
@@ -26,19 +27,7 @@ stateless: os dados são gravados em dispositivos externos.
 const users = [];
 
 const server = http.createServer(async (req, res) => {
-    const buffers = [];
-
-    for await (const chunk of req) {
-        buffers.push(chunk);
-    }
-
-    try {
-        req.body = JSON.parse(Buffer.concat(buffers).toString());
-    } catch {
-        req.body = null;
-    }
-
-    res.setHeader("Content-Type", "application/json");
+    await json(req, res);
 
     if (req.url === "/users" && req.method === "GET") {
         return res.end(JSON.stringify(users));
