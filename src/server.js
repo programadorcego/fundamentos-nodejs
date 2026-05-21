@@ -1,5 +1,6 @@
 import http from "node:http";
 import { json } from "./middlewares/json.js";
+import { Database } from "./database.js";
 
 /*
  Métodos
@@ -24,19 +25,20 @@ stateless: os dados são gravados em dispositivos externos.
  * 500-599: Server error responses
 */
 
-const users = [];
+const database = new Database();
 
 const server = http.createServer(async (req, res) => {
     await json(req, res);
 
     if (req.url === "/users" && req.method === "GET") {
+        const users = database.select("users");
         return res.end(JSON.stringify(users));
     }
 
     if (req.url === "/users" && req.method === "POST") {
         const { name, email } = req.body;
         
-        users.push({
+        const users = database.insert("users", {
             id: 1,
             name,
             email,
