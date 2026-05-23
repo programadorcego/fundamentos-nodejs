@@ -1,7 +1,6 @@
 import http from "node:http";
 import { json } from "./middlewares/json.js";
-import { Database } from "./database.js";
-import { randomUUID } from "node:crypto";
+import { routes } from "./routes.js";
 
 /*
  Métodos
@@ -26,25 +25,17 @@ stateless: os dados são gravados em dispositivos externos.
  * 500-599: Server error responses
 */
 
-const database = new Database();
-
 const server = http.createServer(async (req, res) => {
     await json(req, res);
 
-    if (req.url === "/users" && req.method === "GET") {
-        const users = database.select("users");
-        return res.end(JSON.stringify(users));
-    }
+    const { method, url } = req;
 
-    if (req.url === "/users" && req.method === "POST") {
-        const { name, email } = req.body;
-        
-        const users = database.insert("users", {
-            id: randomUUID(),
-            name,
-            email,
-        })
-        return res.writeHead(201).end();
+    const route = routes.find(route => {
+return route.method === method && url === route.path;
+    });
+
+    if (route) {
+        return route.handler(req, res);
     }
 
     return res.writeHead(404).end();
